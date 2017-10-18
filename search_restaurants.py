@@ -27,15 +27,23 @@ MAX_RESULT_PER_PAGE = 20
 MAX_PAGE = 2
 
 def main(args):
-    radius = args.radius if args.radius != None else 5000
-    keyword = args.keyword
-    
-    location = LATITUDE + ',' + LONGITUDE
-
-    query = {'location': location, 'radius': radius, \
-    'keyword': keyword, 'key': API_KEY}
-    
+    query = create_query(args)
     search_restaurants(query, next_page_token = None, initial_rank = 1, page = 1)
+
+
+def create_query(args):
+    query = {'key': API_KEY}
+
+    radius = args.radius if args.radius != None else 5000
+    query['radius'] = radius
+
+    if args.keyword != None:
+        query['keyword'] = args.keyword
+
+    location = LATITUDE + ',' + LONGITUDE
+    query['location'] = location
+
+    return query
 
 
 def search_restaurants(query, next_page_token, initial_rank, page):
@@ -119,8 +127,8 @@ def error_handler(json_data):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
     description='searchs for restaurants with a keyword using Google places search API')
-    #TODO: make it optional
-    parser.add_argument('keyword', action='store', help='a term to be matched against all content')
+
+    parser.add_argument('keyword', action='store', nargs='?', help='a term to be matched against all content')
     
     parser.add_argument('-r', '--radius',action='store', dest='radius',
                         help='the distance (in meters) within which to return place results')
