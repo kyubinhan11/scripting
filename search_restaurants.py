@@ -25,16 +25,21 @@ LATITUDE = '48.4384'
 LONGITUDE = '-123.365'
 MAX_RESULT_PER_PAGE = 20
 MAX_PAGE = 2
+DEFAULT_RADIUS = 5000
 
 def main(args):
-    query = create_query(args)
+    query = build_query(args)
     search_restaurants(query, next_page_token = None, initial_rank = 1, page = 1)
 
 
-def create_query(args):
+def build_query(args):
+    """
+    Build a basic query for Google Place Search API
+    """
+
     query = {'key': API_KEY}
 
-    radius = args.radius if args.radius != None else 5000
+    radius = args.radius if args.radius != None else DEFAULT_RADIUS
     query['radius'] = radius
 
     if args.keyword != None:
@@ -63,7 +68,7 @@ def search_restaurants(query, next_page_token, initial_rank, page):
         if ('next_page_token' in json_data):
             # wait a few seconds between consecutive requests for the token to be validated
             sleep(2)
-            get_more_results(json_data['next_page_token'], initial_rank + MAX_RESULT_PER_PAGE, page + 1)
+            print_more_results(json_data['next_page_token'], initial_rank + MAX_RESULT_PER_PAGE, page + 1)
 
     except requests.exceptions.RequestException as e:
         # catastrophic error. bail.
@@ -71,7 +76,10 @@ def search_restaurants(query, next_page_token, initial_rank, page):
         sys.exit(1)
 
 
-def get_more_results(next_page_token, initial_rank, page):
+def print_more_results(next_page_token, initial_rank, page):
+    """
+    Get more results when intial results are more than 20
+    """
     try:
         query = {'pagetoken': next_page_token, 'key': API_KEY}    
         req = requests.get(BASE_URL, params = query)
@@ -82,7 +90,7 @@ def get_more_results(next_page_token, initial_rank, page):
         if ('next_page_token' in json_data) and (page < MAX_PAGE):
             # wait a few seconds between consecutive requests for the token to be validated
             sleep(2)
-            get_more_results(json_data['next_page_token'], initial_rank + MAX_RESULT_PER_PAGE, page + 1)
+            print_more_results(json_data['next_page_token'], initial_rank + MAX_RESULT_PER_PAGE, page + 1)
 
     except requests.exceptions.RequestException as e:
         # catastrophic error. bail.
