@@ -13,7 +13,7 @@ def main(args):
         req = requests.get(website_link)
 
         word_count = get_occurrences(is_case_sensitive, req.text, word)
-        print 'The word "{0}" occurs {1} times on {2} webpage'.format(word, word_count, website_link) 
+        print 'The word "%s" occurs %s times on %s webpage' % (word, word_count, website_link) 
 
     except requests.exceptions.RequestException as e:
         # catastrophic error. bail.
