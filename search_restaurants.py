@@ -23,8 +23,8 @@ from key import API_KEY
 BASE_URL = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
 LATITUDE = '48.4384'
 LONGITUDE = '-123.365'
-MAXIMUM_PAGE = 2
 MAX_RESULT_PER_PAGE = 20
+MAX_PAGE = 2
 
 def main(args):
     radius = args.radius if args.radius != None else 5000
@@ -40,26 +40,41 @@ def main(args):
 
 def search_restaurants(query, next_page_token, initial_rank, page):
     """
-    Make multiple network calls using recursion 
-    (each search can return as many as 60 results, split across three pages.)
+    Make network calls to get a list of names and ranks of restaurants 
     """
     
     query['type'] = 'restaurant'
 
     try:
-        if(next_page_token != None):
-            query = {'pagetoken': next_page_token, 'key': API_KEY}    
         req = requests.get(BASE_URL, params = query)
 
         json_data = req.json() #json_data is a dictionary
         
         print_names_and_rankings(initial_rank, json_data) 
 
-        if ('next_page_token' in json_data) and (page < MAXIMUM_PAGE):
+        if ('next_page_token' in json_data):
             # wait a few seconds between consecutive requests for the token to be validated
             sleep(2)
-            search_restaurants(query, json_data['next_page_token'], \
-            initial_rank + MAX_RESULT_PER_PAGE, page + 1)
+            get_more_results(json_data['next_page_token'], initial_rank + MAX_RESULT_PER_PAGE, page + 1)
+
+    except requests.exceptions.RequestException as e:
+        # catastrophic error. bail.
+        print e
+        sys.exit(1)
+
+
+def get_more_results(next_page_token, initial_rank, page):
+    try:
+        query = {'pagetoken': next_page_token, 'key': API_KEY}    
+        req = requests.get(BASE_URL, params = query)
+
+        json_data = req.json() #json_data is a dictionary
+        print_names_and_rankings(initial_rank, json_data) 
+
+        if ('next_page_token' in json_data) and (page < MAX_PAGE):
+            # wait a few seconds between consecutive requests for the token to be validated
+            sleep(2)
+            get_more_results(json_data['next_page_token'], initial_rank + MAX_RESULT_PER_PAGE, page + 1)
 
     except requests.exceptions.RequestException as e:
         # catastrophic error. bail.
@@ -82,6 +97,7 @@ def print_names_and_rankings(initial_rank, json_data):
         name = results[i]['name'].encode('utf-8').decode('utf-8')
         print 'Rank %s, %s' % (initial_rank + i, name)
         
+
 def error_handler(json_data):
     """
     Check to see if there is an error message or bad status other than 'OK'
