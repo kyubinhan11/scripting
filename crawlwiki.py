@@ -12,22 +12,22 @@ def main(args):
     try:
         req = requests.get(website_link)
 
-        word_count = get_occurrences(is_case_sensitive, req, word)
-        print 'The word "{0}" occurs {1} times on {2}'.format(word, word_count, website_link) 
+        word_count = get_occurrences(is_case_sensitive, req.text, word)
+        print 'The word "{0}" occurs {1} times on {2} webpage'.format(word, word_count, website_link) 
 
     except requests.exceptions.RequestException as e:
         # catastrophic error. bail.
         print e
         sys.exit(1)
 
-def get_occurrences(is_case_sensitive, req, word):
+def get_occurrences(is_case_sensitive, text, word):
     if(is_case_sensitive):
         # Return the number of (non-overlapping) occurrences of substring in the string. 
-        return req.text.count(word)
+        return text.count(word)
 
     # case-insentive search
     else: 
-        lowercased_text = req.text.lower()
+        lowercased_text = text.lower()
         lowercased_word = word.lower()
         return lowercased_text.count(lowercased_word)
 
