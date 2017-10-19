@@ -1,21 +1,5 @@
 #!/usr/bin/python
 
-"""
-endpoint examples
-
-https://maps.googleapis.com/maps/api/place/nearbysearch/json
-?location=48.4384,-123.365&radius=5000&type=restaurant&keyword=mexican
-&key=YOUR_API_KEY
-
-https://maps.googleapis.com/maps/api/place/nearbysearch/json?
-pagetoken=CpQCAgEAAFxg8o-eU7_uKn7Yqjana-HQIx1hr5BrT4zBaEko29ANsXtp9mrqN0yrKWhf-y2
-PUpHRLQb1GT-mtxNcXou8TwkXhi1Jbk-ReY7oulyuvKSQrw1lgJElggGlo0d6indiH1U-tDwquw4tU_UXoQ_
-sj8OBo8XBUuWjuuFShqmLMP-0W59Vr6CaXdLrF8M3wFR4dUUhSf5UC4QCLaOMVP92lyh0OdtF_m_9Dt7lz
--Wniod9zDrHeDsz_by570K3jL1VuDKTl_U1cJ0mzz_zDHGfOUf7VU1kVIs1WnM9SGvnm8YZURLTtMLMWx8
--doGUE56Af_VfKjGDYW361OOIj9GmkyCFtaoCmTMIr5kgyeUSnB-IEhDlzujVrV6O9Mt7N4DagR6RGhT3g
-1viYLS4kO5YindU6dm3GIof1Q&key=YOUR_API_KEY
-
-"""
 import requests
 import argparse
 import json
@@ -36,7 +20,7 @@ def main(args):
 
 def build_query(args):
     """
-    Build a basic query for Google Place Search API
+    Build a query required for Google Place Search API
     """
 
     query = {'key': API_KEY}
@@ -140,7 +124,7 @@ if __name__ == '__main__':
 
     parser.add_argument('keyword', action='store', nargs='?', help='a term to be matched against all content')
     
-    parser.add_argument('-r', '--radius',action='store', dest='radius',
+    parser.add_argument('-r', '--radius', action='store', dest='radius',
                         help='the distance (in meters) within which to return place results')
 
     args = parser.parse_args()

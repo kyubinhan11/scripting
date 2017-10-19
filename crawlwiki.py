@@ -9,8 +9,6 @@ def main(args):
     website_link = args.website_link if args.website_link != None else 'https://en.wikipedia.org/wiki/Oktoberfest' 
     word = args.word
 
-    # print is_case_sensitive, website_link, word
-
     try:
         req = requests.get(website_link)
 
@@ -23,8 +21,13 @@ def main(args):
         sys.exit(1)
 
 def get_occurrences(is_case_sensitive, text, word):
+    """
+    Return the occurrences of the word in the text(case-sensitive or case-insensitive) 
+    """
+
     if(is_case_sensitive):
-        # Return the number of (non-overlapping) occurrences of substring in the string. 
+        # str.count - return the number of (non-overlapping) 
+        # occurrences of substring in the string. 
         return text.count(word)
 
     # case-insentive search
@@ -37,11 +40,11 @@ def get_occurrences(is_case_sensitive, text, word):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
     description='crawl a webpage and count the occurrences of a specified word')
-    
+
+    parser.add_argument('word', action='store', help='a target word')
+
     parser.add_argument('-l', '--link',action='store', dest='website_link',
                         help='set the link of the target website')
-    
-    parser.add_argument('word', action='store', help='a target word')
 
     parser.add_argument('-c', action='store_true', default = False,
                     dest='is_case_sensitive', 
